@@ -1,0 +1,11 @@
+﻿const fs = require('fs'), vm = require('vm');
+const ctx = { console }; ctx.globalThis = ctx; vm.createContext(ctx);
+const files = ['data_tech.js','data_char.js','data_world.js','data_world2.js','data_lore.js','data_quest.js','data_dialogue.js','data_extra.js','data_start.js','data_sect.js','data_cave.js','data_wiki.js','data_event2.js','data_chain.js','data_event3.js','data_trim.js'];
+for (const f of files) vm.runInContext(fs.readFileSync('src/'+f,'utf8'), ctx);
+const D = ctx.WORLD_DATA;
+const byReg = {};
+(D.EXTRA_EVENTS||[]).forEach(e => { const k = e.reg || e.loc || 'any'; byReg[k] = (byReg[k]||0)+1; });
+console.log('events total', (D.EXTRA_EVENTS||[]).length, 'chain', (D.CHAIN_EVENTS||[]).length);
+console.log('by region:', JSON.stringify(byReg));
+const bad = (D.EXTRA_EVENTS||[]).filter(e => !e.options || e.options.some(o => typeof o.run !== 'function'));
+console.log('events missing run:', bad.map(e=>e.id));

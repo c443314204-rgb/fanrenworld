@@ -1,0 +1,15 @@
+﻿const fs = require('fs'), vm = require('vm');
+const ctx = { console }; ctx.globalThis = ctx; vm.createContext(ctx);
+const files = ['data_world.js','data_world2.js','data_lore.js','data_lore2.js','data_quest.js','data_dialogue.js','data_extra.js','data_start.js','data_sect.js','data_cave.js','data_wiki.js','data_event2.js','data_chain.js','data_event3.js','data_place.js','data_place2.js'];
+for (const f of files) vm.runInContext(fs.readFileSync('src/'+f,'utf8'), ctx);
+const D = ctx.WORLD_DATA;
+const ids = {}; let dup = [];
+(D.EXTRA_EVENTS||[]).forEach(e => { if (ids[e.id]) dup.push(e.id); ids[e.id]=1; });
+console.log('EXTRA total', (D.EXTRA_EVENTS||[]).length, 'place', (D.PLACE_EVENTS||[]).length, 'dups', dup);
+const locs = {}; D.LOCATIONS.forEach(l => locs[l.id]=1);
+const bad = (D.EXTRA_EVENTS||[]).filter(e => e.loc && !locs[e.loc]).map(e=>e.id+':'+e.loc);
+console.log('bad loc refs', bad);
+const noRun = (D.EXTRA_EVENTS||[]).filter(e => !e.options || e.options.some(o=>typeof o.run!=='function')).map(e=>e.id);
+console.log('no run', noRun);
+const noLore = D.LOCATIONS.filter(l => !(ctx.LORE.LOC[l.id])).map(l=>l.id);
+console.log('still no lore', noLore.length, noLore);

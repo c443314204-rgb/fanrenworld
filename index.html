@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>凡人修仙传 · 天南</title>
+<meta name="description" content="《凡人修仙传》同人沙盒：天南大地图、NPC 互动、夺宝杀人、闭关突破，战斗全自动。">
+<meta name="theme-color" content="#0a0c0a">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='8' fill='%230a0c0a'/%3E%3Ctext x='32' y='45' font-size='36' font-family='serif' fill='%23c9a961' text-anchor='middle'%3E%E5%87%A1%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg-glow" aria-hidden="true"></div>
+
+<!-- ===================== 标题 ===================== -->
+<section id="screen-title" class="screen center">
+  <div class="title-wrap">
+    <div class="title-eyebrow">天 南 · 一 介 散 修</div>
+    <div class="title-mark">凡</div>
+    <h1 class="title-h1">凡人修仙传</h1>
+    <div class="title-sub"><i></i><span>天 南</span><i></i></div>
+    <p class="title-desc">
+      人界五域，五十九处地方。天南、乱星海、大晋、极西之地、慕兰草原，各有各的活法。<br>
+      你可以采药、闭关、悬赏、辟洞府，也可以杀人夺宝。
+    </p>
+    <div class="mode-row" id="mode-row">
+      <button class="mode-btn on" data-mode="normal">寻 常（死了掉修为）</button>
+      <button class="mode-btn" data-mode="hardcore">硬 核（死了删档）</button>
+    </div>
+    <div class="title-actions">
+      <button id="btn-start" class="btn btn-primary">卜 一 卦</button>
+      <button id="btn-resume" class="btn btn-ghost" hidden>继 续 修 行</button>
+      <button id="btn-howto" class="btn btn-ghost">玩 法</button>
+    </div>
+    <p class="title-foot">同人作品 · 致敬忘语《凡人修仙传》</p>
+  </div>
+</section>
+
+<!-- ===================== 抽签 ===================== -->
+<section id="screen-roll" class="screen center" hidden>
+  <div class="roll-wrap">
+    <div class="roll-kicker">天 命 三 分</div>
+    <div class="roll-grid">
+      <div class="roll-card" id="card-root">
+        <div class="rk">灵 根</div>
+        <div class="rv" id="roll-root-name">—</div>
+        <div class="rd" id="roll-root-desc"></div>
+        <div class="stars" id="roll-root-els"></div>
+      </div>
+      <div class="roll-card" id="card-ident">
+        <div class="rk">出 身</div>
+        <div class="rv" id="roll-ident-name">—</div>
+        <div class="rd" id="roll-ident-desc"></div>
+        <div class="stars" id="roll-ident-tag"></div>
+      </div>
+      <div class="roll-card" id="card-trait">
+        <div class="rk">特 质</div>
+        <div class="rv" id="roll-trait-name">—</div>
+        <div class="rd" id="roll-trait-desc"></div>
+        <div class="stars" id="roll-trait-extra"></div>
+      </div>
+    </div>
+    <div class="trait-chips" id="trait-chips"></div>
+    <div class="roll-name">
+      <input id="input-name" maxlength="8" placeholder="道号（可留空）" autocomplete="off" spellcheck="false">
+    </div>
+    <div class="roll-actions">
+      <button id="btn-reroll" class="btn btn-ghost">重 卜（3）</button>
+      <button id="btn-enter" class="btn btn-primary">踏 入 天 南</button>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 大地图 ===================== -->
+<section id="screen-map" class="screen map-screen" hidden>
+  <header class="hud" id="hud"></header>
+
+  <main class="map-main">
+    <div class="region-bar" id="region-bar"></div>
+    <div class="map-card" id="map-card">
+      <svg class="map-svg" id="map-svg" viewBox="0 0 1120 720" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+        <defs>
+          <linearGradient id="sea" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#0a1418"/><stop offset="1" stop-color="#050a0d"/>
+          </linearGradient>
+          <linearGradient id="land" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#3a3524"/><stop offset=".5" stop-color="#423c28"/><stop offset="1" stop-color="#302c1d"/>
+          </linearGradient>
+          <linearGradient id="desert" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#4a3f24"/><stop offset="1" stop-color="#3a3220" stop-opacity=".15"/>
+          </linearGradient>
+          <radialGradient id="vin" cx="50%" cy="46%" r="62%">
+            <stop offset="55%" stop-color="#05080a" stop-opacity="0"/>
+            <stop offset="100%" stop-color="#05080a" stop-opacity=".82"/>
+          </radialGradient>
+        </defs>
+        <rect width="1120" height="720" fill="url(#sea)"/>
+        <rect x="14" y="14" width="1092" height="692" fill="none" stroke="#c9a961" stroke-opacity=".16"/>
+        <rect x="22" y="22" width="1076" height="676" fill="none" stroke="#c9a961" stroke-opacity=".06"/>
+
+        <g transform="translate(60,40)">
+          <g opacity=".16" stroke="#6f8f98" fill="none" stroke-width="1">
+            <path d="M20 560 q40 -10 80 0"/><path d="M70 610 q50 -12 100 0"/>
+            <path d="M760 560 q40 -10 80 0"/><path d="M700 615 q50 -12 100 0"/>
+            <path d="M20 120 q50 -10 100 0"/>
+          </g>
+          <path d="M210 40 Q300 8 390 46 Q450 18 520 52 Q566 30 630 58 Q700 82 760 104 Q820 92 862 138 Q892 176 884 226 Q918 268 906 318 Q928 372 890 420 Q868 476 812 502 Q790 556 730 586 Q668 612 606 586 Q548 616 486 588 Q424 600 374 560 Q312 548 268 502 Q212 470 190 414 Q158 372 166 318 Q136 264 152 208 Q140 150 176 96 Q186 62 210 40 Z"
+                fill="url(#land)" stroke="#6b6244" stroke-width="1.6" stroke-linejoin="round"/>
+          <path d="M210 40 Q176 96 176 160 Q158 240 190 300 Q212 380 250 440 Q296 500 330 520 L300 470 Q240 420 220 340 Q200 250 216 170 Q222 100 246 60 Z" fill="url(#desert)"/>
+          <g stroke="#6b6244" fill="none" stroke-width="1.4" opacity=".45">
+            <path d="M286 196 l16 -16 l16 16 l16 -16 l16 16"/>
+            <path d="M330 232 l14 -14 l14 14 l14 -14 l14 14"/>
+            <path d="M640 150 l16 -16 l16 16 l16 -16 l16 16"/>
+            <path d="M690 190 l13 -13 l13 13 l13 -13 l13 13"/>
+            <path d="M410 340 l15 -15 l15 15 l15 -15 l15 15"/>
+            <path d="M520 300 l12 -12 l12 12"/>
+            <path d="M250 380 l12 -12 l12 12 l12 -12 l12 12"/>
+          </g>
+          <path d="M548 548 Q524 452 560 372 Q596 292 574 196 Q562 150 578 112" fill="none" stroke="#4a5f5a" stroke-width="2" opacity=".5"/>
+          <path d="M380 552 Q420 470 470 430 Q530 388 600 380" fill="none" stroke="#4a5f5a" stroke-width="1.6" opacity=".35"/>
+          <text x="430" y="300" class="map-region">天　南</text>
+          <text x="640" y="650" class="map-region small">九 国 盟</text>
+          <text x="800" y="300" class="map-region small">魔　道</text>
+          <text x="150" y="640" class="map-region small" transform="rotate(-90 150 640)">极 西 之 地</text>
+        </g>
+
+        <rect width="1120" height="720" fill="url(#vin)" pointer-events="none"/>
+
+        <g transform="translate(1024,628)" opacity=".5" stroke="#c9a961" fill="none">
+          <circle r="30" stroke-width=".8"/>
+          <circle r="21" stroke-width=".6" stroke-opacity=".6"/>
+          <path d="M0 -34 L6 0 L0 34 L-6 0 Z" fill="#c9a961" fill-opacity=".35" stroke="none"/>
+          <text x="0" y="-38" fill="#c9a961" stroke="none" font-size="11" text-anchor="middle" font-family="serif">北</text>
+        </g>
+        <g transform="translate(940,676)" opacity=".45">
+          <path d="M0 0 h90 M0 -4 v8 M45 -3 v6 M90 -4 v8" stroke="#c9a961" stroke-width="1" fill="none"/>
+          <text x="0" y="-10" fill="#c9a961" font-size="10" font-family="serif">百里</text>
+        </g>
+        <g transform="translate(28,28)">
+          <rect width="148" height="34" fill="#0b100c" fill-opacity=".55" stroke="#c9a961" stroke-opacity=".35"/>
+          <text x="74" y="23" fill="#c9a961" fill-opacity=".8" font-size="15" text-anchor="middle" font-family="serif" letter-spacing="4">天南舆图</text>
+        </g>
+      </svg>
+      <div class="map-nodes" id="map-nodes"></div>
+      <div class="map-head">
+        <div class="mh-name" id="map-region-name"></div>
+        <div class="mh-sub" id="map-region-sub"></div>
+      </div>
+      <div class="map-legend">
+        <span><i class="dot t0"></i>安全</span>
+        <span><i class="dot t1"></i>低危</span>
+        <span><i class="dot t2"></i>中危</span>
+        <span><i class="dot t3"></i>高危</span>
+      </div>
+    </div>
+
+    <aside class="loc-panel" id="loc-panel"></aside>
+  </main>
+
+  <footer class="log-strip" id="log-strip"></footer>
+</section>
+
+<!-- ===================== 功法 / 人物 ===================== -->
+<section id="screen-build" class="screen" hidden>
+  <header class="build-top">
+    <div class="bt-left">
+      <span class="bt-logo">凡</span>
+      <span class="bt-title" id="build-title">人物 · 功法</span>
+    </div>
+    <div class="bt-progress" id="char-brief"></div>
+    <div class="bt-right">
+      <span class="bt-stones">灵石 <b id="stones">0</b></span>
+      <button id="btn-back" class="mini-btn">回到地图</button>
+    </div>
+  </header>
+
+  <main class="build-main">
+    <aside class="panel char-panel" id="char-panel"></aside>
+    <section class="panel mid-panel">
+      <div class="panel-title">功 法 栏<span class="pt-hint">装备的功法提供被动，并解锁它的法术</span></div>
+      <div class="tech-slots" id="tech-slots"></div>
+      <div class="panel-title">法 术 栏<span class="pt-hint">自动战斗按这个顺序施放</span></div>
+      <div class="spell-slots" id="spell-slots"></div>
+      <div class="mid-tip">
+        自动战斗按这个顺序找第一个能放的：冷却好了、法力够、目标活着。<br>
+        所以<em>顺序就是 build</em>——有冷却的防御、增益放在输出前面，它们会在冷却好之后插进来。
+      </div>
+    </section>
+    <aside class="panel lib-panel">
+      <div class="panel-title">功 法 库<span class="pt-hint" id="lib-count"></span></div>
+      <div class="lib-tabs" id="lib-tabs"></div>
+      <div class="lib-list" id="lib-list"></div>
+    </aside>
+  </main>
+</section>
+
+<!-- ===================== 战斗 ===================== -->
+<section id="screen-battle" class="screen" hidden>
+  <header class="battle-top">
+    <div class="battle-head-left">
+      <span class="bt-mark">斗</span>
+      <div class="battle-title" id="battle-title">斗法</div>
+      <div class="battle-round" id="battle-round">第 1 回合</div>
+    </div>
+    <div class="speed-row">
+      <button class="speed-btn on" data-speed="1">×1</button>
+      <button class="speed-btn" data-speed="2">×2</button>
+      <button class="speed-btn" data-speed="4">×4</button>
+      <button class="speed-btn" id="btn-inspect">查看状况</button>
+      <button class="speed-btn" id="btn-skip">跳 过</button>
+      <button class="speed-btn danger" id="btn-giveup">投 降</button>
+    </div>
+  </header>
+
+  <div class="turnbar" id="turnbar"></div>
+
+  <div class="battle-board">
+    <aside class="combatant-col me-col" id="player-zone"></aside>
+
+    <div class="stage" id="stage">
+      <div class="stage-inner" id="stage-inner">
+        <div class="stage-land" id="stage-land"></div>
+        <div class="stage-mist m1"></div>
+        <div class="stage-mist m2"></div>
+        <div class="stage-fighters" id="stage-fighters"></div>
+        <canvas class="stage-fx" id="fx-canvas"></canvas>
+      </div>
+      <div class="stage-float" id="stage-float"></div>
+      <div class="stage-cap" id="skill-banner"></div>
+      <div class="stage-stamp" id="stage-stamp"></div>
+      <div class="stage-intro" id="battle-intro"></div>
+    </div>
+
+    <aside class="combatant-col foe-col" id="enemy-zone"></aside>
+  </div>
+
+  <div class="battle-log" id="battle-log"></div>
+
+  <div class="result-overlay" id="result-overlay" hidden>
+    <div class="result-card">
+      <div class="result-kicker" id="result-kicker"></div>
+      <h2 class="result-title" id="result-title"></h2>
+      <p class="result-text" id="result-text"></p>
+      <div class="result-stats" id="result-stats"></div>
+      <div class="result-actions" id="result-actions"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== 结局 ===================== -->
+<section id="screen-end" class="screen center" hidden>
+  <div class="end-wrap">
+    <div class="end-kicker" id="end-kicker">道 途 至 此</div>
+    <h1 class="end-title" id="end-title">身死</h1>
+    <p class="end-text" id="end-text"></p>
+    <div class="end-stats" id="end-stats"></div>
+    <button id="btn-again" class="btn btn-primary">再 入 轮 回</button>
+  </div>
+</section>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-inner">
+    <div class="modal-head">
+      <div class="modal-title" id="modal-title"></div>
+      <button class="modal-close" id="modal-close">×</button>
+    </div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="data_tech.js"></script>
+<script src="data_char.js"></script>
+<script src="data_world.js"></script>
+<script src="data_world2.js"></script>
+<script src="data_lore.js"></script>
+  <script src="data_lore2.js"></script>
+<script src="data_quest.js"></script>
+<script src="data_dialogue.js"></script>
+<script src="data_extra.js"></script>
+<script src="data_start.js"></script>
+<script src="data_sect.js"></script>
+<script src="data_cave.js"></script>
+<script src="data_wiki.js"></script>
+<script src="data_event2.js"></script>
+<script src="data_chain.js"></script>
+<script src="data_event3.js"></script>
+  <script src="data_place.js"></script>
+  <script src="data_place2.js"></script>
+<script src="data_trim.js"></script>
+<script src="engine.js"></script>
+<script src="rules.js"></script>
+<script src="world.js"></script>
+<script src="cave.js"></script>
+<script src="sprites.js"></script>
+<script src="battle_fx.js"></script>
+<script src="battle_scene.js"></script>
+<script src="ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+﻿const fs = require('fs'), vm = require('vm');
+const ctx = { console }; ctx.globalThis = ctx; vm.createContext(ctx);
+for (const f of ['data_world.js','data_world2.js']) vm.runInContext(fs.readFileSync('src/'+f,'utf8'), ctx);
+const L = ctx.WORLD_DATA.LOCATIONS;
+const seen = {}, dup = [];
+L.forEach(l => { if (seen[l.id]) dup.push(l.id + ' / ' + l.name); seen[l.id] = 1; });
+console.log('total', L.length, 'dups', dup);
+const names = {}, nd = [];
+L.forEach(l => { if (names[l.name]) nd.push(l.name); names[l.name] = 1; });
+console.log('name dups', nd);
